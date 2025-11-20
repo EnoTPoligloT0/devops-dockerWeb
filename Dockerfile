@@ -1,14 +1,25 @@
-# Linuxowy kontener z openjdk v17
-FROM openjdk:17-jdk-slim
+# Utwórz plik Dockerfile
+cat > Dockerfile << 'EOF'
+# Wykorzystujemy obraz OpenJDK 17
+FROM openjdk:17-jdk-alpine
 
-# Ustawianie workdira w kontenerze
+# Katalog roboczy w kontenerze
 WORKDIR /app
 
-# Skopiowanie jarki z hosta do kontenera
-COPY target/demoWeb-0.0.1-SNAPSHOT.jar /app/demoWeb.jar
+# Kopiowanie wrapper'a Maven i konfiguracji projektu
+COPY mvnw .
+COPY mvnw.cmd .
+COPY pom.xml .
 
-# Wystawienie portu 8080
-EXPOSE 8080
+# Kopiowanie źródeł aplikacji
+COPY src src
 
-# Uruchomienie aplikacji spring-bootowej przy starcie kontenera
-ENTRYPOINT ["java", "-jar", "/app/demoWeb.jar"]
+# Nadanie uprawnień do wykonywania dla Maven wrapper
+RUN chmod +x mvnw
+
+# Kompilacja aplikacji
+RUN ./mvnw clean package -DskipTests
+
+# Uruchomienie aplikacji Spring Boot
+CMD ["java", "-jar", "target/demo-0.0.1-SNAPSHOT.jar"]
+EOF
