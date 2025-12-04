@@ -1,5 +1,3 @@
-# Utwórz plik Dockerfile
-cat > Dockerfile << 'EOF'
 # Wykorzystujemy obraz OpenJDK 17
 FROM openjdk:17-jdk-alpine
 
@@ -21,5 +19,5 @@ RUN chmod +x mvnw
 RUN ./mvnw clean package -DskipTests
 
 # Uruchomienie aplikacji Spring Boot
-CMD ["java", "-jar", "target/demo-0.0.1-SNAPSHOT.jar"]
-EOF
+# Note: Using wildcard *.jar to avoid version mismatch errors
+CMD ["sh", "-c", "java -jar target/*.jar"]
